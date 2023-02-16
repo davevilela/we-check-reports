@@ -16,7 +16,10 @@ export type CreateReportPayload = z.infer<typeof createReportSchema>;
 
 async function exportPdf(params: CreateReportPayload) {
   const { exportId, workspace } = params;
-  const browser = await puppeteer.launch({ headless: true });
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  });
   const page = await browser.newPage();
 
   const url = `${getBaseUrl()}/reports/${workspace}/${exportId}`;
