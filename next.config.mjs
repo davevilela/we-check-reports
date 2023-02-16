@@ -30,6 +30,10 @@ const config = {
             key: "Content-Type",
             value: "application/pdf",
           },
+          {
+            key: "Cache-Control",
+            value: "no-store",
+          },
         ],
       },
     ];
