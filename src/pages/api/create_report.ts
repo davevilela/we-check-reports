@@ -4,13 +4,21 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import puppeteer from "puppeteer";
 
 import { getBaseUrl } from "utils/get-base-url";
+import { z } from "zod";
 
-async function exportPdf(params: { reportId: string }) {
-  const { reportId } = params;
+const createReportSchema = z.object({
+  exportId: z.string(),
+  workspace: z.string(),
+});
+
+export type CreateReportPayload = z.infer<typeof createReportSchema>;
+
+async function exportPdf(params: CreateReportPayload) {
+  const { exportId, workspace } = params;
   const browser = await puppeteer.launch({ headless: true });
   const page = await browser.newPage();
 
-  const url = `${getBaseUrl()}/reports/${reportId}`;
+  const url = `${getBaseUrl()}/reports/${workspace}/${exportId}`;
 
   await page.goto(url, {
     waitUntil: "networkidle2",
@@ -27,18 +35,21 @@ async function exportPdf(params: { reportId: string }) {
   return res;
 }
 
-export type CreateReportPayload = {
-  reportId: string;
-};
-
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  if (req.method !== "POST") {
-    res.status(405).send({ message: "Only POST requests allowed" });
-  }
-  const pdf = await exportPdf(req.body as CreateReportPayload);
+  try {
+    if (req.method !== "POST") {
+      res.status(405).send({ message: "Only POST requests allowed" });
+    }
 
-  res.status(201).send(pdf);
+    createReportSchema.parse(req.body);
+
+    const pdf = await exportPdf(req.body as CreateReportPayload);
+
+    res.status(201).send(pdf);
+  } catch (e) {
+    return res.status(400).send(e);
+  }
 }
