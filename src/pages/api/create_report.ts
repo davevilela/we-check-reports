@@ -63,3 +63,9 @@ export default async function handler(
     return res.status(400).send(e);
   }
 }
+
+export const config = {
+  api: {
+    responseLimit: false,
+  },
+};
