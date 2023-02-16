@@ -2,7 +2,8 @@
 import { createId } from "@paralleldrive/cuid2";
 import type { NextApiRequest, NextApiResponse } from "next";
 import puppeteer from "puppeteer";
-import logger from "pino";
+
+import treeKill from "tree-kill";
 
 import { getBaseUrl } from "utils/get-base-url";
 import { z } from "zod";
@@ -20,6 +21,7 @@ async function exportPdf(params: CreateReportPayload) {
     headless: true,
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
+
   const page = await browser.newPage();
 
   const url = `${getBaseUrl()}/reports/${workspace}/${exportId}`;
@@ -35,6 +37,12 @@ async function exportPdf(params: CreateReportPayload) {
     printBackground: true,
     format: "A4",
   });
+
+  const process = browser.process()?.pid;
+
+  if (process) {
+    treeKill(process, "SIGKILL");
+  }
 
   await browser.close();
 

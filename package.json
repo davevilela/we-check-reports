@@ -19,6 +19,7 @@
     "puppeteer-stream": "^2.1.4",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "tree-kill": "^1.2.2",
     "zod": "^3.20.2"
   },
   "devDependencies": {
