@@ -24,6 +24,8 @@ async function exportPdf(params: CreateReportPayload) {
 
   const url = `${getBaseUrl()}/reports/${workspace}/${exportId}`;
 
+  console.log("[requesting url:]", url);
+
   await page.goto(url, {
     waitUntil: "networkidle2",
   });
@@ -31,7 +33,7 @@ async function exportPdf(params: CreateReportPayload) {
   const res = await page.pdf({
     path: `/tmp/${createId()}.pdf`,
     printBackground: true,
-    format: "letter",
+    format: "A4",
   });
 
   await browser.close();
