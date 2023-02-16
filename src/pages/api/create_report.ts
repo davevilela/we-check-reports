@@ -2,6 +2,7 @@
 import { createId } from "@paralleldrive/cuid2";
 import type { NextApiRequest, NextApiResponse } from "next";
 import puppeteer from "puppeteer";
+import logger from "pino";
 
 import { getBaseUrl } from "utils/get-base-url";
 import { z } from "zod";
@@ -46,10 +47,14 @@ export default async function handler(
 
     createReportSchema.parse(req.body);
 
+    console.log("[REQUEST BODY]", req.body);
+
     const pdf = await exportPdf(req.body as CreateReportPayload);
 
     res.status(201).send(pdf);
   } catch (e) {
+    console.log("[REQUEST ERROR]", e);
+
     return res.status(400).send(e);
   }
 }
