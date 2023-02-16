@@ -58,9 +58,9 @@ export default async function handler(
       res.status(405).send({ message: "Only POST requests allowed" });
     }
 
-    console.log("[REQUEST BODY]", req.body);
+    console.log("[REQUEST BODY]", JSON.parse(req.body));
 
-    createReportSchema.parse(req.body);
+    createReportSchema.parse(JSON.parse(req.body));
 
     const pdf = await exportPdf(req.body as CreateReportPayload);
 
